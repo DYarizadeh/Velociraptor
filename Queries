@@ -1,5 +1,4 @@
-PSLIST
-
+Processes
 // Get a free VT api key
 LET VTKey <= ""
 // Build the list of untrusted processes first
@@ -19,6 +18,6 @@ ORDER BY VTResults DESC
 
 
 
-Netstat
+Sockets
 SELECT Name,`Laddr.IP`,`Raddr.IP`, Fqdn FROM source(artifact="Windows.Network.Netstat")
 GROUP BY `Raddr.IP`
