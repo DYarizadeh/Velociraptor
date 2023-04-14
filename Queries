@@ -11,12 +11,12 @@ GROUP BY Exe,SHA256
 SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
 ORDER BY VTResults DESC
 
-DLLS
+DLLS - Make sure to run certificate and hash in artificat configuration
 LET VTKey <= ""
 LET Results = SELECT Fqdn,Pid,Name,ModuleName,ExePath,Hash.SHA256 as SHA256, count() AS Count FROM source()
 SELECT  *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
 ORDER BY VTResults DESC
-SELECT * FROM source(artifact="Windows.System.DLLs")
+
 
 
 Netstat
