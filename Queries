@@ -1,42 +1,19 @@
-Run PsList artifact then edit the resulting notebook
+PSLIST
 
 // Get a free VT api key
 LET VTKey <= ""
 // Build the list of untrusted processes first
-Let Results = SELECT Fqdn,Name,CommandLine,Hash.SHA256 AS SHA256, count() AS Count FROM source()
-GROUP BY Name,SHA256
-
-
-
+Let Results = SELECT Name,CommandLine,Exe,Hash.SHA256 AS SHA256, count() AS Count FROM source()
+WHERE Authenticode.Trusted = "untrusted"
+AND SHA256 // only entries with the required SHA256
+GROUP BY Exe,SHA256
 // Now combine the previous query with the Server Enrichment query
 SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
 ORDER BY VTResults DESC
 
-
-
-
-/*
-# Windows.System.Pslist
-*/
-SELECT * FROM source(artifact="Windows.System.Pslist")
-LIMIT 50
-
-
-
-Works - run System.Dll artifact work then edit in notebook - Might need to adjust the Group BY
-
+DLLS
 LET VTKey <= ""
-
 LET Results = SELECT Fqdn,Pid,Name,ModuleName,ExePath,Hash.SHA256 as SHA256, count() AS Count FROM source()
-
-
-
 SELECT  *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
-
 ORDER BY VTResults DESC
-
-
-
-
 SELECT * FROM source(artifact="Windows.System.DLLs")
-LIMIT 50
