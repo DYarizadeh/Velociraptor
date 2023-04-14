@@ -12,10 +12,10 @@ ORDER BY VTResults DESC
 
 DLLS - Make sure to run certificate and hash in artificat configuration
 LET VTKey <= ""
-LET Results = SELECT Fqdn,Pid,Name,ModuleName,ExePath,Hash.SHA256 as SHA256, count() AS Count FROM source()
-SELECT  *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
+Let Results = SELECT Fqdn,Pid,Name,ModuleName,ModulePath,Hash.SHA256 as SHA256, count() AS Count FROM source()
+WHERE Certinfo.Trusted != "trusted"
+SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
 ORDER BY VTResults DESC
-
 
 
 Sockets
