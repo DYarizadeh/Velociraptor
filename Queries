@@ -25,3 +25,6 @@ GROUP BY `Raddr.IP`
 
 4624 EvtxHunter Post Process
 SELECT EventTime, Computer, EventID, EventData.SubjectUserName, EventData.TargetUserName, EventData.IpAddress, EventData.WorkstatioName, EventData.ProcessName, EventData.LogonType, Fqdn FROM source(artifact="Windows.EventLogs.EvtxHunter")
+
+Adding a label to output based on ClientID 
+label(client_id=ClientID, labels="", op="set")
