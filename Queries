@@ -18,6 +18,10 @@ SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(Virustotal
 ORDER BY VTResults DESC
 
 
-Sockets
+Sockets Post Process
 SELECT Name,`Laddr.IP`,`Raddr.IP`, Fqdn FROM source(artifact="Windows.Network.Netstat")
 GROUP BY `Raddr.IP`
+
+
+4624 EvtxHunter Post Process
+SELECT EventTime, Computer, EventID, EventData.SubjectUserName, EventData.TargetUserName, EventData.IpAddress, EventData.WorkstatioName, EventData.ProcessName, EventData.LogonType, Fqdn FROM source(artifact="Windows.EventLogs.EvtxHunter")
