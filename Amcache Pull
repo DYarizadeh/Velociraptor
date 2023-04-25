@@ -1,5 +1,5 @@
 name: Windows.Artifact.Amcache
-author: Dennis Yarizadeh
+author: Dennis Yarizadeh/Chris Jones
 description: |
    This artifact pulls SHA1 hashes from the Amcache hive.
    NOTE: AMCache can be unreliable. For example, SHA1 of large files will
