@@ -32,3 +32,25 @@ sources:
                         root=pathspec(DelegatePath=files.OSPath),
                         accessor='raw_reg')
         WHERE NOT SHA1 = NULL
+
+
+Post processing for results 
+name: Server.Artifact.AmcacheVT
+description: Post Processing for Amcache
+# Can be CLIENT, CLIENT_EVENT, SERVER, SERVER_EVENT
+type: Server
+
+sources:
+
+   - query: |
+        
+        LET VTKey <= ""
+        LET Results = SELECT EntryKey, KeyMTime, ClientId, Fqdn, SHA1,count() AS Count
+        FROM source(hunt_id="")
+        GROUP BY SHA1
+
+        SELECT *, {SELECT VTRating
+        FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey,Hash=SHA1)} 
+        AS VTResults
+        FROM foreach(row=Results)
+        WHERE Count < 10
