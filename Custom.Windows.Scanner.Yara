@@ -1,0 +1,46 @@
+name: Custom.Windows.Scanner.Yara
+description: |
+    Instructions: Upload compiled yara signature file (signature file must be named yara.yas) 
+    and yara64.exe in a single zip file called yara.zip
+    
+    This artifact will drop the yara.zip file onto the client in a temporary directory, 
+    iterate through every running process and scan the process with a given yara signature, 
+    and then finally delete the temporary file. 
+    
+    
+    
+    
+    
+author: Chris Jones + Dennis Yarizadeh
+
+
+
+tools:
+  - name: yaraexecutable
+    url: https://github.com/VirusTotal/yara/releases/download/v4.3.2/yara-4.3.2-2150-win64.zip
+
+    
+sources:
+  - query: |
+
+        LET processes = SELECT * FROM pslist()
+
+        LET YaraExePath <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="yaraexecutable", IsExecutable=FALSE)
+
+        LET TmpDir <= tempdir(remove_last=TRUE)
+        
+        LET FetchYara <= SELECT * FROM unzip(filename=YaraExePath.FullPath, output_directory=TmpDir)
+
+        -- Set EXE
+        LET YaraExe <= TmpDir + '\\yara64.exe'
+
+        -- Set Yara file
+        Let YaraFile <= TmpDir + '\\yara.yas'
+
+        SELECT * FROM foreach(row=processes,
+        
+        query={
+            SELECT Name, Pid, Ppid, Stdout FROM execve(argv=[YaraExe, YaraFile, Pid])
+        })
+
+        
