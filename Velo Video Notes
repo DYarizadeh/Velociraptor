@@ -1,0 +1,31 @@
+apply labels to all clients in results 
+https://youtu.be/Q1IoGX--814?t=1143
+
+lateral movement hunt - windows eventlogs.rdpauth (hunts for more than just rdp) 
+https://youtu.be/Q1IoGX--814?t=1279
+
+baseline processes 
+https://youtu.be/Q1IoGX--814?t=1607
+
+pstree the malware
+https://youtu.be/Q1IoGX--814?t=2033
+
+find persistance
+https://youtu.be/Q1IoGX--814?t=2177
+
+malicious scheduled tasks 
+https://youtu.be/Q1IoGX--814?t=2527
+
+autoruns
+https://youtu.be/Q1IoGX--814?t=2662
+
+yarascan all processes for cobalt strike 
+https://youtu.be/Q1IoGX--814?t=3092
+
+pull triage acquisition 
+https://youtu.be/Q1IoGX--814?t=3554
+
+hayabusa
+https://youtu.be/Q1IoGX--814?t=3713
+
+https://gist.github.com/ecapuano/daee6f3704273c2c8b527f522c1725db
