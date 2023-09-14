@@ -1,5 +1,5 @@
-name: Custom.Windows.Scanner.Loki
-
+name: Custom.Windows.Scanner.LokiAgain
+description: Make sure to download latest release of Loki, upgrade, and then package in a zip folder named loki.zip
 tools:
   - name: Loki
     
@@ -23,7 +23,7 @@ sources:
         
         -- execute Loki
         LET ExecLoki <= SELECT * FROM execve(argv=filter(list=[
-                        TmpDir + "/loki/loki.exe", 
+                        TmpDir + "\\loki\\loki.exe", 
                         "-l", TmpDir + "\\loki\\" + Hostname.Host[0]  + "-loki-log-file.csv", 
                         "--csv",
                         "--dontwait",
