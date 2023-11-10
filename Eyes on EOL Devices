@@ -1,0 +1,27 @@
+To be ran in notebook after running Generic.Client.Info
+
+// Overview 
+SELECT Platform,PlatformVersion, count()
+FROM hunt_results(
+    artifact='Generic.Client.Info/BasicInformation',
+    // artifact='Generic.Client.Info/LinuxInfo',
+    // artifact='Generic.Client.Info/WindowsInfo',
+    // artifact='Generic.Client.Info/Users',
+    hunt_id='')
+Group By PlatformVersion order by PlatformVersion
+
+// Get the details from the ones that are end of support
+SELECT Platform,PlatformVersion, Hostname, Fqdn
+FROM hunt_results(
+    artifact='Generic.Client.Info/BasicInformation',
+    // artifact='Generic.Client.Info/LinuxInfo',
+    // artifact='Generic.Client.Info/WindowsInfo',
+    // artifact='Generic.Client.Info/Users',
+    hunt_id='')
+Where Platform =~ "Server 2003" 
+OR Platform =~ "Server 2008"
+OR Platform =~ "Server 2012"
+OR Platform =~ "Windows XP"
+OR Platform =~ "Vista"
+OR Platform =~ "Windows 7"
+ORDER BY PlatformVersion
