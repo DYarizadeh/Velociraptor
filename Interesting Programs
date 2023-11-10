@@ -1,0 +1,58 @@
+Postprocess in Notebook after running windows.sys.programs
+
+SELECT DisplayName, DisplayVersion, Publisher, KeyName, InstallDate, count()
+FROM hunt_results(
+    artifact='Windows.Sys.Programs',
+    hunt_id='')
+// The usual suspects (RAT)
+//OR DisplayName =~ ""
+Where DisplayName =~ "Anydesk"
+OR DisplayName =~ "Teamviewer"
+OR DisplayName =~ "Atera"
+OR DisplayName =~ "zoho"
+OR DisplayName =~ "Desktop Central"
+OR DisplayName =~ "NGROK"
+OR DisplayName =~ "VNC"
+OR DisplayName =~ "gotoassist"
+OR DisplayName =~ "Dameware"
+OR DisplayName =~ "jitsi"
+OR DisplayName =~ "solar"
+// The less usual Suspects (RAT)
+OR DisplayName =~ "Kaseya"
+OR DisplayName =~ "connectwise"
+OR DisplayName =~ "beamyourscreen"
+OR DisplayName =~ "acquire"
+OR DisplayName =~ "anyplace"
+OR DisplayName =~ "asg"
+OR DisplayName =~ "avolin"
+OR DisplayName =~ "dualmon"
+OR DisplayName =~ "ericom"
+OR DisplayName =~ "fixme"
+OR DisplayName =~ "gotomeeting"
+OR DisplayName =~ "gotomypc"
+OR DisplayName =~ "goverlan"
+OR DisplayName =~ "halp"
+OR DisplayName =~ "impero"
+OR DisplayName =~ "joinme"
+OR DisplayName =~ "ninja"
+OR DisplayName =~ "netop"
+OR DisplayName =~ "nomachine"
+OR DisplayName =~ "radmin"
+OR DisplayName =~ "realvnc"
+OR DisplayName =~ "remotepc"
+OR DisplayName =~ "securelink"
+OR DisplayName =~ "showmy"
+OR DisplayName =~ "supercontrol"
+// Recon Tools
+OR DisplayName =~ "NMAP"
+OR DisplayName =~ "Suck"
+// Execution Tools
+OR DisplayName =~ "psexec"
+
+//For good measure check exchange version
+//https://learn.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019
+// OR (DisplayName =~ "Exchange" And NOT DisplayName =~ "Language")
+
+
+Group By DisplayName
+Order By DisplayName
