@@ -1,4 +1,4 @@
-name: Custom.Windows.Scanner.Yara
+name: CPIRT.Windows.Scanner.Yara
 description: |
     Instructions: Upload compiled yara signature file (signature file must be named yara.yas) 
     and yara64.exe in a single zip file called yara.zip
@@ -24,10 +24,11 @@ sources:
   - query: |
 
         LET processes = SELECT * FROM pslist()
+        
+        LET TmpDir <= tempdir()
 
-        LET YaraExePath <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="yaraexecutable", IsExecutable=FALSE)
+        LET YaraExePath <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="yaraexecutable", IsExecutable=FALSE, TemporaryOnly=TRUE)
 
-        LET TmpDir <= tempdir(remove_last=TRUE)
         
         LET FetchYara <= SELECT * FROM unzip(filename=YaraExePath.FullPath, output_directory=TmpDir)
 
@@ -36,11 +37,9 @@ sources:
 
         -- Set Yara file
         Let YaraFile <= TmpDir + '\\yara.yas'
-
-        SELECT * FROM foreach(row=processes,
-        
+        EXPLAIN
+        SELECT * FROM foreach(
+            row=processes,
         query={
             SELECT Name, Pid, Ppid, Stdout FROM execve(argv=[YaraExe, YaraFile, Pid])
         })
-
-        
