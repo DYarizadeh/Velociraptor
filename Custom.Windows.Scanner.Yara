@@ -4,7 +4,7 @@ description: |
     and yara64.exe in a single zip file called yara.zip
     
     This artifact will drop the yara.zip file onto the client in a temporary directory, 
-    iterate through every running process and scan the process with a given yara signature, 
+    iterate through every running process or file in C: and can with the provided compiled signature base,
     and then finally delete the temporary file. 
     
     
@@ -33,7 +33,7 @@ sources:
         
         LET TmpDir <= tempdir()
 
-        LET YaraExePath <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="yaraexecutable", IsExecutable=FALSE, TemporaryOnly=FALSE)
+        LET YaraExePath <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="yaraexecutable", IsExecutable=FALSE, TemporaryOnly=TRUE)
 
         
         LET FetchYara <= SELECT * FROM unzip(filename=YaraExePath.FullPath, output_directory=TmpDir)
