@@ -4,7 +4,7 @@ description: |
     and yara64.exe in a single zip file called yara.zip
     
     This artifact will drop the yara.zip file onto the client in a temporary directory, 
-    iterate through every running process or file in C: and can with the provided compiled signature base,
+    and depending on the configuration, scan either every process (as determined by pslist) or the C:\ drive, 
     and then finally delete the temporary file. 
     
     
@@ -57,7 +57,7 @@ sources:
         })},
         
         else = { 
-        SELECT * FROM execve(argv=[YaraExe, "-C", YaraFile, "-r", "C:"])
+        SELECT Name, Stdout FROM execve(argv=[YaraExe, "-C", YaraFile, "-r", "C:"])
              }
         )
 
