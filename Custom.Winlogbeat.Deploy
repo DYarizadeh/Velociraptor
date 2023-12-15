@@ -1,0 +1,33 @@
+name: Custom.Winlogbeat.Deploy
+description: |
+   Quick and dirty way to deploy Winlogbeat via Velociraptor
+# Can be CLIENT, CLIENT_EVENT, SERVER, SERVER_EVENT
+type: CLIENT
+parameters:
+   - name: binaryURL
+     default: http://url.to/winlogbeat.exe
+   - name: installPath
+     default: C:\Program Files\winlogbeat
+   - name: binPath
+     default: C:\Program Files\winlogbeat\winlogbeat.exe
+   - name: configURL
+     default: http://url.to/winlogbeat.yml
+   - name: configPath
+     default: C:\Program Files\winlogbeat\winlogbeat.yml
+   - name: installerURL
+     default: http://url.to/install-service-winlogbeat.ps1
+   - name: installerPath
+     default: C:\Program Files\winlogbeat\install-service-winlogbeat.ps1
+   - name: cmd
+     default: cmd.exe
+   - name: powershell
+     default: powershell
+sources:
+  - queries:
+     - LET lol <= SELECT Stdout FROM execve(argv=[cmd, "/c", "mkdir" , installPath])
+     - LET download_binary <= SELECT hash(path=Content) as Hash, Filename AS Name, "Downloaded" AS DownloadStatus, copy(filename=Content, dest=binPath) AS FullPath FROM http_client(url=binaryURL, tempfile_extension=".exe", remove_last=TRUE)
+     - LET download_config <= SELECT hash(path=Content) as Hash, Filename AS Name, "Downloaded" AS DownloadStatus, copy(filename=Content, dest=configPath) AS FullPath FROM http_client(url=configURL, tempfile_extension=".yml", remove_last=TRUE)
+     - LET download_install <= SELECT hash(path=Content) as Hash, Filename AS Name, "Downloaded" AS DownloadStatus, copy(filename=Content, dest=installerPath) AS FullPath FROM http_client(url=installerURL, tempfile_extension=".ps1", remove_last=TRUE)
+     - LET run_powershell <= SELECT Stdout FROM execve(argv=[powershell,"-ExecutionPolicy","Unrestricted", "-File", installerPath])
+     - LET out = SELECT Stdout FROM execve(argv=[cmd,"/c","sc", "start", "winlogbeat"])
+     - SELECT * from parse_csv(filename=out.Stdout[0], accessor='data')
