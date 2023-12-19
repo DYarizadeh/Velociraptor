@@ -19,7 +19,7 @@ sources:
         
         --install service 
         LET run_powershell <= SELECT *, sleep(time=3) FROM execve(argv=[powershell,"-ExecutionPolicy","Unrestricted", "-File", installPath + "\\winlogbeat\\install-service-winlogbeat.ps1"])
-        LET run_setup <= SELECT *, sleep(time=10) FROM execve(argv=[powershell, installPath + "\\winlogbeat\\winlogbeat.exe", "setup", "-e"])
+        LET run_setup <= SELECT *, sleep(time=30) FROM execve(argv=[powershell, installPath + "\\winlogbeat\\winlogbeat.exe", "setup", "-e"])
         LET out = SELECT * FROM execve(argv=[cmd,"/c","sc", "start", "winlogbeat"])
         SELECT * from parse_csv(filename=out.Stdout[0], accessor='data')
         
