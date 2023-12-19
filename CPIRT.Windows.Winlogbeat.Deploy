@@ -8,16 +8,19 @@ parameters:
      default: cmd.exe
    - name: powershell
      default: powershell
+   - name: installPath
+     default: C:\Program Files\Velociraptor\Tools
 
 sources:
   - query: |
         -- preparation
-        LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Winlogbeat", IsExecutable=FALSE)
-        LET TmpDir <= tempdir(remove_last=TRUE)
-        LET UnzipIt <= SELECT * FROM unzip(filename=Toolzip.FullPath, output_directory=TmpDir)
+        LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Winlogbeat", IsExecutable=FALSE,TemporaryOnly=FALSE)
+        LET UnzipIt <= SELECT * FROM unzip(filename=Toolzip.FullPath, output_directory=installPath)
         
         --install service 
-        LET run_powershell <= SELECT Stdout FROM execve(argv=[powershell,"-ExecutionPolicy","Unrestricted", "-File", TmpDir + "/winlogbeat/install-service-winlogbeat.ps1"])
-        LET out = SELECT Stdout FROM execve(argv=[cmd,"/c","sc", "start", "winlogbeat"])
+        LET makedirectory <= SELECT Stdout FROM execve(argv=[cmd, "/c", "mkdir" , installPath])
+        LET run_powershell <= SELECT *, sleep(time=3) FROM execve(argv=[powershell,"-ExecutionPolicy","Unrestricted", "-File", installPath + "\\winlogbeat\\install-service-winlogbeat.ps1"])
+        LET run_setup <= SELECT *, sleep(time=10) FROM execve(argv=[powershell, installPath + "\\winlogbeat\\winlogbeat.exe", "setup", "-e"])
+        LET out = SELECT * FROM execve(argv=[cmd,"/c","sc", "start", "winlogbeat"])
         SELECT * from parse_csv(filename=out.Stdout[0], accessor='data')
         
