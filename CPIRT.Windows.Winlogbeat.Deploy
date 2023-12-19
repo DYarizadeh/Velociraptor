@@ -14,7 +14,7 @@ parameters:
 sources:
   - query: |
         -- preparation
-        LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Winlogbeat",TemporaryOnly=FALSE)
+        LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Winlogbeat",IsExecutable=FALSE, TemporaryOnly=FALSE)
         LET UnzipIt <= SELECT * FROM unzip(filename=Toolzip.FullPath, output_directory=installPath)
         
         --install service 
