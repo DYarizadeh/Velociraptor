@@ -1,0 +1,23 @@
+name: CPIRT.Windows.Winlogbeat.Deploy
+description: Deploys Winlogbeat, in the Velo temp folder, as a persistent service. Please have Winlogbeat fully configured before utilizing this artifact (configure winlogbeat.yml to point at Elastic as well as have the correct credentials/keystore configured)
+tools:
+  - name: Winlogbeat
+  
+parameters:
+   - name: cmd
+     default: cmd.exe
+   - name: powershell
+     default: powershell
+
+sources:
+  - query: |
+        -- preparation
+        LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Winlogbeat", IsExecutable=FALSE)
+        LET TmpDir <= tempdir(remove_last=TRUE)
+        LET UnzipIt <= SELECT * FROM unzip(filename=Toolzip.FullPath, output_directory=TmpDir)
+        
+        --install service 
+        LET run_powershell <= SELECT Stdout FROM execve(argv=[powershell,"-ExecutionPolicy","Unrestricted", "-File", TmpDir + "/winlogbeat/install-service-winlogbeat.ps1"])
+        LET out = SELECT Stdout FROM execve(argv=[cmd,"/c","sc", "start", "winlogbeat"])
+        SELECT * from parse_csv(filename=out.Stdout[0], accessor='data')
+        
