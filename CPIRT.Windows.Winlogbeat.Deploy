@@ -14,11 +14,10 @@ parameters:
 sources:
   - query: |
         -- preparation
-        LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Winlogbeat", IsExecutable=FALSE,TemporaryOnly=FALSE)
+        LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Winlogbeat",TemporaryOnly=FALSE)
         LET UnzipIt <= SELECT * FROM unzip(filename=Toolzip.FullPath, output_directory=installPath)
         
         --install service 
-        LET makedirectory <= SELECT Stdout FROM execve(argv=[cmd, "/c", "mkdir" , installPath])
         LET run_powershell <= SELECT *, sleep(time=3) FROM execve(argv=[powershell,"-ExecutionPolicy","Unrestricted", "-File", installPath + "\\winlogbeat\\install-service-winlogbeat.ps1"])
         LET run_setup <= SELECT *, sleep(time=10) FROM execve(argv=[powershell, installPath + "\\winlogbeat\\winlogbeat.exe", "setup", "-e"])
         LET out = SELECT * FROM execve(argv=[cmd,"/c","sc", "start", "winlogbeat"])
