@@ -1,15 +1,10 @@
-name: Custom.Windows.Scanner.LokiAgain
+name: CPIRT.Windows.Scanner.Loki
 description: Make sure to download latest release of Loki, upgrade, and then package in a zip folder named loki.zip
 tools:
   - name: Loki
     
 parameters:
-  - name: IntenseScan
-    type: bool
-    
-  - name: ProcessOnly
-    type: bool
-    
+
   - name: UploadCSVLog
     type: bool
 
@@ -23,17 +18,15 @@ sources:
         
         -- execute Loki
         LET ExecLoki <= SELECT * FROM execve(argv=filter(list=[
-                        TmpDir + "\\loki\\loki.exe", 
-                        "-l", TmpDir + "\\loki\\" + Hostname.Host[0]  + "-loki-log-file.csv", 
+                        TmpDir + "\\loki\\loki.exe", "--onlyrelevant",  
+                        "-l", TmpDir + "\\" + Hostname.Host[0]  + "-loki-log-file.csv", 
                         "--csv",
-                        "--dontwait",
-                        if(condition=IntenseScan, then="--intense", else=""),
-                        if(condition=ProcessOnly, then="--nofilescan", else="")], regex="."))
+                        "--dontwait"], regex="."))
         -- parse csvs
         SELECT * FROM foreach(row=ExecLoki,
             query={
                 SELECT *, Hostname
-                FROM split_records(filenames=TmpDir + "\\loki\\" + Hostname.Host[0]  + "-loki-log-file.csv", accessor="auto", regex="," , columns=['Time', 'Hostname', 'DetectionType', 'ScanType', 'Detection'], count=5)
+                FROM split_records(filenames=TmpDir + "\\" + Hostname.Host[0]  + "-loki-log-file.csv", accessor="auto", regex="," , columns=['Time', 'Hostname', 'DetectionType', 'ScanType', 'Detection'], count=5)
         })
         
   - name: Uploads
