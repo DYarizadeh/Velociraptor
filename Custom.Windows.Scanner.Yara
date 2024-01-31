@@ -1,10 +1,10 @@
-name: CPIRT.Windows.Scanner.Yara
+name: CPIRT.Windows.Scanner.Yara.Parsed
 description: |
     Instructions: Upload compiled yara signature file (signature file must be named yara.yas) 
     and yara64.exe in a single zip file called yara.zip
     
     This artifact will drop the yara.zip file onto the client in a temporary directory, 
-    and depending on the configuration, scan either every process (as determined by pslist) or the C:\ drive, 
+    iterate through every running process and scan the process with a given yara signature, 
     and then finally delete the temporary file. 
     
     
@@ -24,7 +24,11 @@ parameters:
    description: "Are we scanning Processes?"
    type: bool
    default: Y
-
+   
+ - name: ThreadLimit
+   description: "How many threads to utilise?"
+   type: string
+   default: "2"
     
 sources:
   - query: |
@@ -35,7 +39,6 @@ sources:
 
         LET YaraExePath <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="yaraexecutable", IsExecutable=FALSE, TemporaryOnly=TRUE)
 
-        
         LET FetchYara <= SELECT * FROM unzip(filename=YaraExePath.FullPath, output_directory=TmpDir)
 
         -- Set EXE
@@ -43,23 +46,23 @@ sources:
 
         -- Set Yara file
         Let YaraFile <= TmpDir + '\\yara.yas'
-
         
-        SELECT * FROM 
-        
-        if (condition=ScanType, 
-        then={
-        SELECT * FROM 
-        foreach(
-            row=processes,
+        -- Scan with Yara File
+        LET Execute <= SELECT * FROM if (condition=ScanType, then={SELECT * FROM  foreach(row=processes,
         query={
-            SELECT Name, Pid, Ppid, Stdout FROM execve(argv=[YaraExe, "-C", YaraFile, Pid])
+            SELECT Name, Pid, Ppid, Stdout FROM execve(argv=[YaraExe, "-C", YaraFile, Pid, "-p", ThreadLimit])
         })},
         
         else = { 
-        SELECT Name, Stdout FROM execve(argv=[YaraExe, "-C", YaraFile, "-r", "C:"])
-             }
-        )
-
+        SELECT Stdout FROM execve(argv=[YaraExe, "-C", YaraFile, "-r",  "C:\\", "-g", "-p", ThreadLimit])})
         
+        --Read Data
+        LET Query = SELECT Stdout FROM Execute
         
+        LET ParseLines = SELECT * FROM parse_lines(filename=Query.Stdout, accessor="data")
+        
+        LET YaraGrok = "%{WORD:category} \\[\\] %{GREEDYDATA:file_path}"
+        
+        LET ParsedData = SELECT grok(grok=YaraGrok, data=Line) AS Parsed FROM ParseLines
+        
+        SELECT Parsed.category AS Category, Parsed.file_path AS `File Path` FROM ParsedData
