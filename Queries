@@ -28,3 +28,8 @@ SELECT EventTime, Computer, EventID, EventData.SubjectUserName, EventData.Target
 
 Adding a label to output based on ClientID - Add this to select statement, make sure ClientID is not apart of the select query
 ,label(client_id=ClientID, labels="", op="set")
+
+Yara Forge Query (Removes Duplicates and some F+) 
+SELECT Category, `File Path`, Fqdn, count() as Count FROM source(artifact="CPIRT.Windows.Scanner.Yara.Parsed")
+Where NOT `File Path` =~ "Velo" AND NOT `File Path` =~ "CheckPoint"
+Group By `File Path`
