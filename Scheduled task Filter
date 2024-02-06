@@ -46,7 +46,7 @@ sources:
             
             
         SELECT * FROM Results WHERE 
-        Command =~ "regsvr32" OR 
+WHERE Command =~ "regsvr32" OR 
         Command =~ "rundll32" OR 
         Command =~ "cmd\.exe" OR  
         Command =~ "powershell" OR 
@@ -64,15 +64,16 @@ sources:
         Command =~ "scriptrunner" OR 
         Command =~ "hh\.exe" OR 
         Command =~ "hh" OR
-        Command =~ "\\AppData\\Local\\Temp" OR
-        Command =~ "\\AppData\\Roaming\\" OR 
-        Command =~ "\\Users\\Public\\" OR
-        Command =~ "\\WINDOWS\\Temp\\" OR
-        Command =~ "\\Desktop\\" OR
-        Command =~ "\\Downloads\\" OR
-        Command =~ "\\Temporary Internet" OR
+        Command =~ "Appdata\Local\Temp" OR
+        Command =~ "Appdata\Roaming" OR 
+        Command =~ "Users\Public" OR
+        Command =~ "WINDOWS\Temp" OR
+        Command =~ "Desktop" OR
+        Command =~ "Downloads" OR
+        Command =~ "Temporary Internet" OR
         Command =~ "ProgramData" OR
         Command =~ "Perflogs" OR
         Command =~ "appdata" OR
         Command =~ "comspec" OR
         Command =~ "localappdata"
+
