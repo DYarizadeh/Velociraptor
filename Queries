@@ -10,6 +10,30 @@ GROUP BY Exe,SHA256
 SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
 ORDER BY VTResults DESC
 
+***********************
+
+PROCESSES BUT SERVER ARTIFACT 
+name: Server.Artifact.Processes
+description: Post Processing for Amcache
+# Can be CLIENT, CLIENT_EVENT, SERVER, SERVER_EVENT
+type: Server
+
+sources:
+
+   - query: |
+        
+        LET VTKey <= ""
+        Let Results = SELECT Name,CommandLine,Exe,Hash.SHA256 AS SHA256, count() AS Count FROM source(hunt_id="")
+        WHERE Authenticode.Trusted = "untrusted" AND NOT Exe =~ "velo"
+        AND SHA256 // only entries with the required SHA256
+        GROUP BY Exe,SHA256
+
+        SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) 
+        WHERE Count < 10
+        ORDER BY VTResults DESC
+
+******************
+
 DLLS - Make sure to run certificate and hash in artificat configuration
 LET VTKey <= ""
 Let Results = SELECT Fqdn,Pid,Name,ModuleName,ModulePath,Hash.SHA256 as SHA256, count() AS Count FROM source()
@@ -17,6 +41,7 @@ WHERE Certinfo.Trusted != "trusted"
 SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=SHA256) } AS VTResults FROM foreach(row=Results) WHERE Count < 10
 ORDER BY VTResults DESC
 
+********************
 
 Sockets Post Process
 SELECT Name,`Laddr.IP`,`Raddr.IP`, Fqdn FROM source(artifact="Windows.Network.Netstat")
