@@ -14,7 +14,7 @@ ORDER BY VTResults DESC
 
 PROCESSES BUT SERVER ARTIFACT 
 name: Server.Artifact.Processes
-description: Post Processing for Amcache
+description: Post Processing for VT Process Hash Lookup
 # Can be CLIENT, CLIENT_EVENT, SERVER, SERVER_EVENT
 type: Server
 
