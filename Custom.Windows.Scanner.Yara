@@ -1,17 +1,12 @@
 name: CPIRT.Windows.Scanner.Yara.Parsed
 description: |
-    Instructions: Upload compiled yara signature file (signature file must be named yara.yas) 
-    and yara64.exe in a single zip file called yara.zip
+    Instructions: Upload a yara signature file (signature file must be named yara.yas) and yara64.exe in a single zip file called yara.zip.
+    This artifact is an alternative way to scan processes, or recursively scan the C:\ with a yara file containing multiple yara rules, utilizing the official yara tool. 
     
-    This artifact will drop the yara.zip file onto the client in a temporary directory, 
-    iterate through every running process and scan the process with a given yara signature, 
-    and then finally delete the temporary file. 
+    This artifact will drop the yara.zip file onto the client in a temporary directory, unzip the binary and yara file, 
+    and then iterate through every running process or file on disk. Finally, it will delete the temporary directory.  
     
-    
-    
-    
-    
-author: Chris Jones + Dennis Yarizadeh
+    Author: Dennis Yarizadeh + Chris Jones - Check Point Incident Response Team
 
 
 
@@ -50,11 +45,11 @@ sources:
         -- Scan with Yara File
         LET Execute <= SELECT * FROM if (condition=ScanType, then={SELECT * FROM  foreach(row=processes,
         query={
-            SELECT Name, Pid, Ppid, Stdout FROM execve(argv=[YaraExe, "-C", YaraFile, Pid, "-p", ThreadLimit])
+            SELECT Name, Pid, Ppid, Stdout FROM execve(argv=[YaraExe, YaraFile, Pid, "-p", ThreadLimit])
         })},
         
         else = { 
-        SELECT Stdout FROM execve(argv=[YaraExe, "-C", YaraFile, "-r",  "C:\\", "-g", "-p", ThreadLimit])})
+        SELECT Stdout FROM execve(argv=[YaraExe, YaraFile, "-r",  "C:\\", "-g", "-p", ThreadLimit])})
         
         --Read Data
         LET Query = SELECT Stdout FROM Execute
