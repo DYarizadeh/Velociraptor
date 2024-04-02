@@ -8,7 +8,7 @@ sources:
         
       LET VTKey <= ""
       Let Results = SELECT `Entry Location`, Enabled, Category, Signer, `Image Path`, `Launch String`, Fqdn, `SHA-256`, count() AS Count 
-      FROM source(hunt_id=")
+      FROM source(hunt_id="")
       WHERE Enabled = Enabled AND Signer = ""
       GROUP BY `SHA-256`
 
