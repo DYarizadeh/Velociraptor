@@ -6,19 +6,14 @@ sources:
 
    - query: |
         
-      LET VTKey <= ""
-      Let Results = SELECT `Entry Location`, Enabled, Category, Signer, `Image Path`, `Launch String`, Fqdn, `SHA-256`, count() AS Count 
-      FROM source(hunt_id="")
-      WHERE Enabled = Enabled AND Signer = ""
-      GROUP BY `SHA-256`
+        LET VTKey <= "95a9ca62148bac508ffd20f24cd7dc5581ea809f06e608a94aa3665f3420fb11"
+        Let Results = SELECT `Entry Location`, Enabled, Category, Signer, `Image Path`, `Launch String`, Fqdn, `SHA-256`, count() AS Count 
+         FROM source(hunt_id="H.CO5F90UNB92DA")
+         WHERE Enabled = enabled AND Signer = ""
+        GROUP BY `SHA-256`
 
 
-      SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=`SHA-256`) } AS VTResults 
-      FROM foreach(row=Results) 
-      WHERE Count < 10
-      ORDER BY VTResults DESC
-
-
-
-
-
+         SELECT *, {SELECT VTRating FROM Artifact.Server.Enrichment.Virustotal(VirustotalKey=VTKey, Hash=`SHA-256`) } AS VTResults 
+        FROM foreach(row=Results) 
+        WHERE Count < 10
+        ORDER BY VTResults DESC
