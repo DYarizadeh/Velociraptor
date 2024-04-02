@@ -15,13 +15,12 @@ sources:
         LET Toolzip <= SELECT FullPath FROM Artifact.Generic.Utils.FetchBinary(ToolName="Loki", IsExecutable=FALSE)
         LET TmpDir <= tempdir(remove_last=TRUE)
         LET UnzipIt <= SELECT * FROM unzip(filename=Toolzip.FullPath, output_directory=TmpDir)
+        Let LokiExec = TmpDir + '\\loki\\loki.exe' 
         
         -- execute Loki
-        LET ExecLoki <= SELECT * FROM execve(argv=filter(list=[
-                        TmpDir + "\\loki\\loki.exe", "--onlyrelevant",  
-                        "-l", TmpDir + "\\" + Hostname.Host[0]  + "-loki-log-file.csv", 
-                        "--csv",
-                        "--dontwait"], regex="."))
+        LET ExecLoki <= SELECT * FROM execve(argv=['cmd.exe', '/c', 'cd', TmpDir, '&', LokiExec, '--onlyrelevant', '-l', TmpDir + '\\' + Hostname.Host[0] + '-loki-log-file.csv', '--csv', '--dontwait'])
+        
+
         -- parse csvs
         SELECT * FROM foreach(row=ExecLoki,
             query={
