@@ -5,4 +5,4 @@ Where NOT Line =~ "Hayabusa" AND NOT Line =~ "Loki" AND NOT Line =~ "Velocirapto
 AND Line =~ '"level":"Warning"' OR Line =~ '"level":"Alert"'
 
 
-jq -r '.Line | fromjson | .file, .file_1' yourfile.json
+jq -r '.Line | fromjson | [.hostname, .file, .reason_1] | @csv' warningsandalerts.json | sort | uniq -c > ThorServerParsed.txt
