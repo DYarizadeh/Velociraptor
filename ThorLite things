@@ -1,7 +1,8 @@
 Parsing for Alerts
 
 SELECT * FROM source(artifact="Generic.Scanner.ThorZIP/ThorResultsJson")
-Where Line =~ '"level":"Alert"' AND Not Line =~ "Velociraptor" AND Not Line =~ "Loki"
+Where NOT Line =~ "Hayabusa" AND NOT Line =~ "Loki" AND NOT Line =~ "Velociraptor" 
+AND Line =~ '"level":"Warning"' OR Line =~ '"level":"Alert"'
 
 
 jq -r '.Line | fromjson | .file, .file_1' yourfile.json
