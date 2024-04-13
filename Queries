@@ -1,5 +1,5 @@
 Commonly abused paths: 
-Where ModulePath =~ "C:\Windows\System32" OR ModulePath =~ "C:\Windows\SysWOW64" OR ModulePath =~ "C:\Users" OR ModulePath =~ "C:\Program Files" OR ModulePath =~ "C:\Program Files (x86)" OR ModulePath =~ "Startup" OR ModulePath =~ "C:\Temp" OR ModulePath =~ "C:\Windows\Temp" OR ModulePath =~ "Perflog"
+Where ModulePath =~ "System32" OR ModulePath =~ "SysWOW64" OR ModulePath =~ "C:\Users" OR ModulePath =~ "C:\Program Files" OR ModulePath =~ "C:\Program Files (x86)" OR ModulePath =~ "Startup" OR ModulePath =~ "C:\Temp" OR ModulePath =~ "C:\Windows\Temp" OR ModulePath =~ "Perflog"
 
 Processes
 // Get a free VT api key
